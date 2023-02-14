@@ -1,0 +1,42 @@
+{
+  "err": null,
+  "msg": "Todo list",
+  "todos": [
+    {
+      "id": "63eb0a4a7fef6e5e2bee1bfa",
+      "title": "Bañarme",
+      "description": "Bañarme en la mañana",
+      "status": {
+        "isCompleted": false,
+        "createdAt": "2023-02-12T18:12:49.216Z"
+      },
+      "flags": ["important", "urgent"],
+      "createdBy": {
+        "profile": {
+          "name": "Juan",
+          "email": "Alberto@gmail.com",
+          "phone": "123456789",
+          "avatar": "https://api.dicebear.com/5.x/pixel-art/svg?seed=John"
+        }
+      }
+    },
+    {
+      "id": "63eb0a507fef6e5e2bee1bfc",
+      "title": "Bañarme",
+      "description": "Bañarme en la mañana",
+      "status": {
+        "isCompleted": false,
+        "createdAt": "2023-02-12T18:12:49.216Z"
+      },
+      "flags": ["important", "urgent"],
+      "createdBy": {
+        "profile": {
+          "name": "Juan",
+          "email": "Alberto@gmail.com",
+          "phone": "123456789",
+          "avatar": "https://api.dicebear.com/5.x/pixel-art/svg?seed=John"
+        }
+      }
+    }
+  ]
+}
