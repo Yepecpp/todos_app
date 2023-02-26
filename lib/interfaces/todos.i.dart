@@ -1,8 +1,8 @@
 import 'dart:convert';
-
-import 'package:todos_app/models/profile.model.dart';
+import 'package:todos_app/interfaces/profile.i.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 class Todos {
   String? err;
   String? msg;
@@ -14,17 +14,16 @@ class Todos {
     if (response.statusCode != 200) {
       throw Exception('Failed to load todos');
     }
-    return Todos.fromJson(
-       jsonDecode(response.body)
-    );
+    return Todos.fromJson(jsonDecode(response.body));
   }
+
   Todos.fromJson(Map<String, dynamic> json) {
     err = json['err'];
     msg = json['msg'];
     if (json['todos'] != null) {
       todos = <Todo>[];
       json['todos'].forEach((v) {
-        todos!.add( Todo.fromJson(v));
+        todos!.add(Todo.fromJson(v));
       });
     }
   }
@@ -60,8 +59,7 @@ class Todo {
     id = json['id'];
     title = json['title'];
     description = json['description'];
-    status =
-        json['status'] != null ? Status.fromJson(json['status']) : null;
+    status = json['status'] != null ? Status.fromJson(json['status']) : null;
     flags = json['flags'].cast<String>();
     createdBy = json['createdBy'] != null
         ? CreatedBy.fromJson(json['createdBy'])
@@ -85,14 +83,14 @@ class Todo {
 }
 
 class Status {
-  bool? isCompleted;
-  String? createdAt;
+  bool isCompleted = false;
+  DateTime? createdAt;
 
-  Status({this.isCompleted, this.createdAt});
+  Status({this.isCompleted = false, this.createdAt});
 
   Status.fromJson(Map<String, dynamic> json) {
     isCompleted = json['isCompleted'];
-    createdAt = json['createdAt'];
+    createdAt = DateTime.tryParse(json['createdAt']) ?? DateTime.now();
   }
 
   Map<String, dynamic> toJson() {
@@ -121,4 +119,3 @@ class CreatedBy {
     return data;
   }
 }
-

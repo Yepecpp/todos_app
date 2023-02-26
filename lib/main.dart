@@ -1,12 +1,12 @@
-
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter/material.dart';
 import 'package:todos_app/views/index.v.dart';
- import 'package:todos_app/models/todos.model.dart';
-const String url = 'https://api.yepe.me/api/v1/todos';
+import 'package:todos_app/views/todos.v.dart';
+import 'package:todos_app/views/profile.v.dart';
+import 'package:todos_app/views/login.s.dart';
+
 Future main() async {
   await dotenv.load(fileName: ".env");
-  debugPrint(dotenv.env['HOSTAPI']!);
   runApp(const App());
 }
 
@@ -19,13 +19,13 @@ class App extends StatelessWidget {
       title: 'Todos App',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.green,
       ),
-      home: const RootWidget(),
-
+      home: const LoginScreen(),
     );
   }
 }
+
 class RootWidget extends StatefulWidget {
   const RootWidget({super.key});
 
@@ -35,8 +35,10 @@ class RootWidget extends StatefulWidget {
 
 class _RootWidgetState extends State<RootWidget> {
   int currentPage = 0;
-  static const List<Widget> views =  [
- IndexView(),
+  static const List<Widget> views = [
+    IndexView(),
+    ProfileView(),
+    TodosView(),
   ];
   @override
   Widget build(BuildContext context) {
@@ -45,30 +47,23 @@ class _RootWidgetState extends State<RootWidget> {
         title: const Text('Yepe\'s todo list'),
       ),
       body: views[currentPage],
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          // log to console
-          debugPrint('Floating action button pressed');
-          final resp = await Todos.getTodos();
-          debugPrint(resp.todos!.length.toString());
-        },
-        child: const Icon(Icons.refresh),
-      ),
       bottomNavigationBar: NavigationBar(
+        selectedIndex: currentPage,
+        elevation: 18,
         destinations: const [
           NavigationDestination(
-            selectedIcon: 
-            Icon(Icons.home, color: Colors.blue)
-            ,
+            selectedIcon: Icon(Icons.home, color: Colors.grey),
             icon: Icon(Icons.home),
             label: 'Home',
           ),
           NavigationDestination(
             icon: Icon(Icons.person),
+            selectedIcon: Icon(Icons.person, color: Colors.grey),
             label: 'Profile',
           ),
           NavigationDestination(
             icon: Icon(Icons.bookmark_add),
+            selectedIcon: Icon(Icons.bookmark_add, color: Colors.grey),
             label: 'Todos',
           ),
         ],
@@ -76,7 +71,7 @@ class _RootWidgetState extends State<RootWidget> {
           if (index == currentPage) {
             return;
           }
-          if (index > views.length-1) return;
+          if (index > views.length - 1) return;
           setState(() {
             currentPage = index;
           });
