@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:todos_app/interfaces/todos.i.dart';
+import 'package:todos_app/models/todos.m.dart';
 
 class TodosService extends StatefulWidget {
   const TodosService({super.key});

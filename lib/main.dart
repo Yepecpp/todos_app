@@ -1,9 +1,11 @@
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter/material.dart';
-import 'package:todos_app/views/index.v.dart';
-import 'package:todos_app/views/todos.v.dart';
-import 'package:todos_app/views/profile.v.dart';
-import 'package:todos_app/views/login.s.dart';
+import 'package:todos_app/screens/index.s.dart';
+import 'package:todos_app/screens/todos.s.dart';
+import 'package:todos_app/screens/profile.s.dart';
+import 'package:todos_app/screens/login.s.dart';
+import 'bloc/auth_bloc.dart';
 
 Future main() async {
   await dotenv.load(fileName: ".env");
@@ -19,9 +21,23 @@ class App extends StatelessWidget {
       title: 'Todos App',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primarySwatch: Colors.green,
+        primarySwatch: Colors.red,
       ),
-      home: const LoginScreen(),
+      home: MultiBlocProvider(
+        providers: [
+          BlocProvider<AuthBloc>(
+            create: (context) => AuthBloc()..add(AuthEventInitial()),
+          ),
+        ],
+        child: BlocBuilder<AuthBloc, AuthState>(
+          builder: (context, state) {
+            if (state is AuthLoggedIn) {
+              return const RootWidget();
+            }
+            return const LoginScreen();
+          },
+        ),
+      ),
     );
   }
 }

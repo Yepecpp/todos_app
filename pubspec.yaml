@@ -12,7 +12,7 @@ dependencies:
   http: ^0.13.5
   flutter_dotenv: ^5.0.2
   google_fonts: ^4.0.3
-  flutter_bloc: ^7.2.0
+  flutter_bloc: ^8.1.2
   localstorage: ^4.0.0+1
 dev_dependencies:
   flutter_test:
