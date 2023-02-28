@@ -7,6 +7,8 @@
 	<key>CFBundleDisplayName</key>
 	<string>Todos App</string>
 	<key>CFBundleExecutable</key>
+	<key>NSFaceIDUsageDescription</key>
+	<string>Why is my app authenticating using face id?</string>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
 	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>

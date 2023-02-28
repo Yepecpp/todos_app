@@ -1,10 +1,9 @@
 name: todos_app
-description: A new Flutter project.
+description: Todo list app.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 environment:
   sdk: '>=2.18.6 <3.0.0'
-
 dependencies:
   flutter:
     sdk: flutter
@@ -14,6 +13,7 @@ dependencies:
   google_fonts: ^4.0.3
   flutter_bloc: ^8.1.2
   localstorage: ^4.0.0+1
+  local_auth: ^2.1.5
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -24,10 +24,6 @@ flutter:
     - assets/
     - assets/login/
     - .env
-
-  # The following line ensures that the Material Icons font is
-  # included with your application, so that you can use the icons in
-  # the material Icons class.
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:

@@ -10,7 +10,7 @@ class ILogin {
   String password;
   String? token;
   final storage = local_s.LocalStorage('auth');
-  static final url = '${dotenv.env['HOSTAPI']}/auth';
+  static final url = '${dotenv.env['HOSTAPI']}/api/v1/auth';
 
   ILogin({required this.username, required this.password});
   Future<Auth> getAuth() async {

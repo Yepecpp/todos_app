@@ -7,7 +7,7 @@ class Todos {
   String? err;
   String? msg;
   List<Todo>? todos;
-  static final String url = '${dotenv.env['HOSTAPI']!}/todos';
+  static final String url = '${dotenv.env['HOSTAPI']!}/api/v1/todos';
   Todos({this.err, this.msg, this.todos});
   static Future<Todos> getTodos() async {
     final response = await http.get(Uri.parse(url));

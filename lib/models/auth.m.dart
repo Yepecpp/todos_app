@@ -1,3 +1,5 @@
+import 'package:localstorage/localstorage.dart' as local_s;
+
 class Auth {
   String? msg;
   final int status;
@@ -13,6 +15,12 @@ class Auth {
     token = json['token'];
     user = json['user'] != null ? User.fromJson(json['user']) : null;
     isEmployee = json['is_employee'];
+  }
+  Future<bool> logOut() async {
+    final storage = local_s.LocalStorage('auth');
+    await storage.ready;
+    storage.deleteItem('token');
+    return true;
   }
 
   Map<String, dynamic> toJson() {
@@ -93,6 +101,7 @@ class Login {
   String? email;
   String? provider;
   String? lastLogin;
+  String? passw;
 
   Login({this.username, this.email, this.provider, this.lastLogin});
 
@@ -109,6 +118,7 @@ class Login {
     data['email'] = email;
     data['provider'] = provider;
     data['lastLogin'] = lastLogin;
+    data['passw'] = passw;
     return data;
   }
 }
@@ -120,6 +130,7 @@ class Images {
 
   Images.fromJson(Map<String, dynamic> json) {
     avatar = json['avatar'];
+    avatar = 'https://api.yepe.me/$avatar';
   }
 
   Map<String, dynamic> toJson() {

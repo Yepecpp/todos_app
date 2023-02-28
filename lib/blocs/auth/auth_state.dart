@@ -9,7 +9,10 @@ class AuthInitial extends AuthState {
 }
 
 class AuthLoading extends AuthState {
-  AuthLoading();
+  final ILogin login;
+  AuthLoading({
+    required this.login,
+  });
 }
 
 class AuthLoggedIn extends AuthState {

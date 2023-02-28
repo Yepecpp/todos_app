@@ -13,5 +13,8 @@ class AuthEventLogIn extends AuthEvent {
 }
 
 class AuthEventLogOut extends AuthEvent {
-  AuthEventLogOut();
+  final Auth auth;
+  AuthEventLogOut({
+    required this.auth,
+  });
 }

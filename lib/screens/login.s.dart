@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../models/login.m.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../components/login/Input.c.dart';
-import '../bloc/auth_bloc.dart';
+import '../blocs/auth/auth_bloc.dart';
 
 // ignore_for_file: prefer_const_constructors
 class LoginScreen extends StatefulWidget {
@@ -104,7 +104,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                   _formKey.currentState!.validate();
                                 },
                                 validator: (value) {
-                                  if (value!.isEmpty && touched[0]) {
+                                  if (!touched[0]) {
+                                    return null;
+                                  }
+                                  if (value!.isEmpty) {
                                     return 'Please enter your username';
                                   }
                                   if (value.length < 3) {
@@ -127,7 +130,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                   _formKey.currentState!.validate();
                                 },
                                 validator: (value) {
-                                  if (value!.isEmpty & touched[1]) {
+                                  if (!touched[1]) {
+                                    return null;
+                                  }
+                                  if (value!.isEmpty) {
                                     return 'Please enter your password';
                                   }
                                   if (value.length < 3) {
