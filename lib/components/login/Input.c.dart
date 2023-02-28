@@ -10,17 +10,18 @@ class InputFormText extends StatelessWidget {
   final Icon icon;
   final Function validator;
   final String? initialValue;
-  const InputFormText({
-    super.key,
-    required this.setInput,
-    required this.validate,
-    required this.label,
-    required this.icon,
-    required this.validator,
-    this.setObscure,
-    this.obscure,
-    this.initialValue,
-  });
+  final int? max;
+  const InputFormText(
+      {super.key,
+      required this.setInput,
+      required this.validate,
+      required this.label,
+      required this.icon,
+      required this.validator,
+      this.setObscure,
+      this.obscure,
+      this.initialValue,
+      this.max});
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -43,7 +44,13 @@ class InputFormText extends StatelessWidget {
             setInput(value);
             validate();
           },
-          validator: ((value) => validator(value)),
+          maxLines: max ?? 1,
+          validator: ((value) {
+            if (value == initialValue && value!.isNotEmpty) {
+              return null;
+            }
+            return validator(value);
+          }),
           decoration: InputDecoration(
             icon: icon,
             suffixIcon: obscure == null
