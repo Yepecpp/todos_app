@@ -1,16 +1,24 @@
 import 'dart:convert';
-import 'package:todos_app/models/profile.m.dart';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:localstorage/localstorage.dart' as local_s;
+
+final String url = '${dotenv.env['HOSTAPI']!}/api/v1/todos';
+local_s.LocalStorage storage = local_s.LocalStorage('auth');
 
 class Todos {
   String? err;
   String? msg;
   List<Todo>? todos;
-  static final String url = '${dotenv.env['HOSTAPI']!}/api/v1/todos';
   Todos({this.err, this.msg, this.todos});
   static Future<Todos> getTodos() async {
-    final response = await http.get(Uri.parse(url));
+    await storage.ready;
+    final token = storage.getItem('token');
+    final response = await http.get(
+      Uri.parse(url),
+      headers: {"authorization": "Bearer $token"},
+    );
     if (response.statusCode != 200) {
       throw Exception('Failed to load todos');
     }
@@ -45,15 +53,14 @@ class Todo {
   String? description;
   Status? status;
   List<String>? flags;
-  CreatedBy? createdBy;
 
-  Todo(
-      {this.id,
-      this.title,
-      this.description,
-      this.status,
-      this.flags,
-      this.createdBy});
+  Todo({
+    this.id,
+    this.title,
+    this.description,
+    this.status,
+    this.flags,
+  });
 
   Todo.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -61,9 +68,36 @@ class Todo {
     description = json['description'];
     status = json['status'] != null ? Status.fromJson(json['status']) : null;
     flags = json['flags'].cast<String>();
-    createdBy = json['createdBy'] != null
-        ? CreatedBy.fromJson(json['createdBy'])
-        : null;
+  }
+  Future<Map<String, dynamic>> modifyTodo() async {
+    final data = toJson();
+    await storage.ready;
+    final token = storage.getItem('token');
+    final http.Response response = await (id != null
+        ? http.put(
+            Uri.parse(url),
+            headers: {
+              'Content-Type': 'application/json; charset=UTF-8',
+              "authorization": "Bearer $token"
+            },
+            body: jsonEncode({'todo': data}),
+          )
+        : http.post(
+            Uri.parse(url),
+            headers: {
+              'Content-Type': 'application/json; charset=UTF-8',
+              "authorization": "Bearer $token"
+            },
+            body: jsonEncode({'todo': data}),
+          ));
+    if (response.statusCode == 200) {
+      return {
+        'todo': Todo.fromJson(jsonDecode(response.body)),
+        'status': response.statusCode
+      };
+    }
+    debugPrint('failed to modify todo: ${response.body}');
+    return {'todo': this, 'status': response.statusCode};
   }
 
   Map<String, dynamic> toJson() {
@@ -75,9 +109,6 @@ class Todo {
       data['status'] = status!.toJson();
     }
     data['flags'] = flags;
-    if (createdBy != null) {
-      data['createdBy'] = createdBy!.toJson();
-    }
     return data;
   }
 }
@@ -96,26 +127,7 @@ class Status {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['isCompleted'] = isCompleted;
-    data['createdAt'] = createdAt;
-    return data;
-  }
-}
-
-class CreatedBy {
-  Profile? profile;
-
-  CreatedBy({this.profile});
-
-  CreatedBy.fromJson(Map<String, dynamic> json) {
-    profile =
-        json['profile'] != null ? Profile.fromJson(json['profile']) : null;
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    if (profile != null) {
-      data['profile'] = profile!.toJson();
-    }
+    data['createdAt'] = createdAt!.toIso8601String();
     return data;
   }
 }

@@ -14,7 +14,6 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  ILogin login = ILogin(username: '', password: '');
   bool obscure = true;
   bool isLoading = false;
   List<bool> touched = [false, false];
@@ -46,6 +45,7 @@ class _LoginScreenState extends State<LoginScreen> {
           );
         }
         if (state is AuthInitial) {
+          final login = state.login ?? ILogin(username: '', password: '');
           return Scaffold(
             backgroundColor: Colors.grey[300],
             body: SafeArea(
@@ -93,6 +93,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           child: Column(
                             children: [
                               InputFormText(
+                                initialValue: login.username,
                                 icon: const Icon(Icons.person),
                                 setInput: (value) {
                                   if (!touched[0]) {
@@ -120,6 +121,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               const SizedBox(height: 20),
                               InputFormText(
                                 icon: const Icon(Icons.lock),
+                                initialValue: login.password,
                                 setInput: (value) {
                                   if (!touched[1]) {
                                     touched[1] = true;

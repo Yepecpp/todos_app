@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:todos_app/components/Rootwidget.c.dart';
 import 'package:todos_app/screens/login.s.dart';
 import 'blocs/auth/auth_bloc.dart';
+import 'blocs/todos/todos_bloc.dart';
 
 Future main() async {
   await dotenv.load(fileName: ".env");
@@ -25,6 +26,9 @@ class App extends StatelessWidget {
         providers: [
           BlocProvider<AuthBloc>(
             create: (context) => AuthBloc()..add(AuthEventInitial()),
+          ),
+          BlocProvider<TodosBloc>(
+            create: (context) => TodosBloc()..add(TodosEventInitial()),
           ),
         ],
         child: BlocBuilder<AuthBloc, AuthState>(

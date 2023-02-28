@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:todos_app/utils/biometric.dart';
 import 'auth.m.dart';
 
 class ILogin {
@@ -23,6 +24,10 @@ class ILogin {
         return Auth();
       }
     }
+    if (!await bioAuth()) {
+      return Auth();
+    }
+
     final resp = await http.get(Uri.parse(url), headers: {
       "Content-Type": "application/json",
       "authorization": "Bearer $token"
@@ -38,7 +43,7 @@ class ILogin {
   }
 
   Future<Auth> login() async {
-    Auth auth = Auth();
+    Auth auth = Auth(status: 400);
 
     if (username.isEmpty || password.isEmpty) {
       return auth;
@@ -53,13 +58,13 @@ class ILogin {
       }),
       headers: {"Content-Type": "application/json"},
     );
-    auth = Auth.fromJson(jsonDecode(resp.body));
+    //debugPrint(resp.body);
+    auth = Auth.fromJson(jsonDecode(resp.body), status: resp.statusCode);
     if (auth.status == 200) {
       debugPrint("Login successful");
       debugPrint(auth.user!.name);
       storage.setItem('token', auth.token);
     } else {
-      storage.deleteItem('token');
       debugPrint(resp.body);
     }
     return auth;

@@ -9,6 +9,7 @@ class InputFormText extends StatelessWidget {
   final Function? setObscure;
   final Icon icon;
   final Function validator;
+  final String? initialValue;
   const InputFormText({
     super.key,
     required this.setInput,
@@ -18,6 +19,7 @@ class InputFormText extends StatelessWidget {
     required this.validator,
     this.setObscure,
     this.obscure,
+    this.initialValue,
   });
   @override
   Widget build(BuildContext context) {
@@ -35,6 +37,7 @@ class InputFormText extends StatelessWidget {
         ),
         padding: const EdgeInsets.only(left: 20.0),
         child: TextFormField(
+          initialValue: initialValue,
           obscureText: obscure ?? false,
           onChanged: (value) {
             setInput(value);

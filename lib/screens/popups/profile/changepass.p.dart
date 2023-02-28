@@ -1,10 +1,9 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:todos_app/components/login/Input.c.dart';
-import 'package:local_auth/local_auth.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
+import 'package:todos_app/utils/biometric.dart';
 
 class ChangePass {
   String currentPass = '';
@@ -27,7 +26,6 @@ class ChangePass {
         }
       }),
     );
-    debugPrint(resp.body);
     return resp.statusCode == 200;
   }
 }
@@ -42,7 +40,6 @@ class ChangePassPopup extends StatefulWidget {
 }
 
 class _ChangePassPopupState extends State<ChangePassPopup> {
-  final LocalAuthentication localAuth = LocalAuthentication();
   final _formKey = GlobalKey<FormState>();
   final ChangePass changePass = ChangePass(token: '');
   final obscure = [true, true, true];
@@ -85,42 +82,11 @@ class _ChangePassPopupState extends State<ChangePassPopup> {
     }
   }
 
-  Future<bool> bioAuth() async {
-    final bool canAuthenticateWithBiometrics =
-        await localAuth.canCheckBiometrics;
-    final bool canAuthenticate =
-        canAuthenticateWithBiometrics || await localAuth.isDeviceSupported();
-    if (!canAuthenticate) {
-      return true;
-    }
-    final List<BiometricType> availableBiometrics =
-        await localAuth.getAvailableBiometrics();
-    if (availableBiometrics.isEmpty) {
-      return true;
-    }
-    try {
-      const AuthenticationOptions options = AuthenticationOptions(
-          biometricOnly: false, stickyAuth: true, useErrorDialogs: true);
-      final bool authenticated = await localAuth.authenticate(
-        localizedReason: 'Please authenticate to change your password',
-        options: options,
-      );
-      if (!authenticated) {
-        debugPrint('Authentication failed');
-      }
-      return authenticated;
-    } catch (e) {
-      debugPrint(e.toString());
-      return false;
-    }
-  }
-
   @override
   void initState() {
     super.initState();
     changePass.token = widget.token;
     bioAuth().then((value) => {
-          debugPrint(value.toString()),
           if (!value)
             {
               showDialog(
@@ -171,121 +137,143 @@ class _ChangePassPopupState extends State<ChangePassPopup> {
           )
         : SafeArea(
             child: Scaffold(
-              body: Column(children: [
-                IconButton(
+              appBar: AppBar(
+                elevation: 0,
+                centerTitle: true,
+                backgroundColor: Colors.transparent,
+                leading: IconButton(
                   onPressed: () {
                     Navigator.pop(context);
                   },
-                  icon: const Icon(Icons.arrow_back_ios_new),
+                  icon:
+                      const Icon(Icons.arrow_back_ios_new, color: Colors.black),
                 ),
-                Form(
-                  key: _formKey,
-                  child: Column(
+              ),
+              body: Center(
+                child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      InputFormText(
-                          setInput: (value) {
-                            if (!touched[0]) {
-                              touched[0] = true;
-                            }
-                            changePass.currentPass = value;
-                          },
-                          validate: validate,
-                          obscure: obscure[0],
-                          setObscure: (value) {
-                            setState(() {
-                              obscure[0] = value;
-                            });
-                          },
-                          label: 'Current Password',
-                          icon: const Icon(Icons.lock),
-                          validator: (value) {
-                            if (!touched[0]) {
-                              return null;
-                            }
-                            if (value!.isEmpty) {
-                              return 'Please enter your current password';
-                            }
-                            return null;
-                          }),
-                      InputFormText(
-                          setInput: (value) {
-                            if (!touched[1]) {
-                              touched[1] = true;
-                            }
-                            changePass.newPass = value;
-                          },
-                          validate: validate,
-                          obscure: obscure[1],
-                          setObscure: (value) {
-                            setState(() {
-                              obscure[1] = value;
-                            });
-                          },
-                          label: 'New Password',
-                          icon: const Icon(Icons.key),
-                          validator: (value) {
-                            if (!touched[1]) {
-                              return null;
-                            }
-                            if (value!.isEmpty) {
-                              return 'Please enter your new password';
-                            }
-                            return null;
-                          }),
-                      InputFormText(
-                        setInput: (value) {
-                          if (!touched[2]) {
-                            touched[2] = true;
-                          }
-                          changePass.confirmPass = value;
-                        },
-                        obscure: obscure[2],
-                        validate: validate,
-                        label: 'Confirm Password',
-                        icon: const Icon(Icons.key_off_rounded),
-                        validator: (value) {
-                          if (!touched[2]) {
-                            return null;
-                          }
-                          if (value!.isEmpty) {
-                            return 'Please confirm your new password';
-                          }
-                          if (value != changePass.newPass) {
-                            return 'Passwords do not match';
-                          }
-                          return null;
-                        },
-                        setObscure: (value) {
-                          setState(() {
-                            obscure[2] = value;
-                          });
-                        },
-                      ),
-                      GestureDetector(
-                        onTap: () async {
-                          if (!validate()) {
-                            return;
-                          }
-                          final bool success = await changePass.sendReq();
-                          showDialogs(success)
-                              .then((value) => Navigator.of(context).pop());
-                        },
-                        child: Container(
-                          margin: const EdgeInsets.all(10),
-                          padding: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                              color: Colors.red,
-                              borderRadius: BorderRadius.circular(10)),
-                          child: const Text(
-                            'Change Password',
-                            style: TextStyle(color: Colors.white),
-                          ),
+                      Container(
+                        margin: const EdgeInsets.only(bottom: 50),
+                        child: const Text(
+                          'Change Password',
+                          style: TextStyle(
+                              fontSize: 30, fontWeight: FontWeight.bold),
                         ),
-                      )
-                    ],
-                  ),
-                ),
-              ]),
+                      ),
+                      Form(
+                        key: _formKey,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            InputFormText(
+                                setInput: (value) {
+                                  if (!touched[0]) {
+                                    touched[0] = true;
+                                  }
+                                  changePass.currentPass = value;
+                                },
+                                validate: validate,
+                                obscure: obscure[0],
+                                setObscure: (value) {
+                                  setState(() {
+                                    obscure[0] = value;
+                                  });
+                                },
+                                label: 'Current Password',
+                                icon: const Icon(Icons.lock),
+                                validator: (value) {
+                                  if (!touched[0]) {
+                                    return null;
+                                  }
+                                  if (value!.isEmpty) {
+                                    return 'Please enter your current password';
+                                  }
+                                  return null;
+                                }),
+                            const SizedBox(height: 10),
+                            InputFormText(
+                                setInput: (value) {
+                                  if (!touched[1]) {
+                                    touched[1] = true;
+                                  }
+                                  changePass.newPass = value;
+                                },
+                                validate: validate,
+                                obscure: obscure[1],
+                                setObscure: (value) {
+                                  setState(() {
+                                    obscure[1] = value;
+                                  });
+                                },
+                                label: 'New Password',
+                                icon: const Icon(Icons.key),
+                                validator: (value) {
+                                  if (!touched[1]) {
+                                    return null;
+                                  }
+                                  if (value!.isEmpty) {
+                                    return 'Please enter your new password';
+                                  }
+                                  return null;
+                                }),
+                            const SizedBox(height: 10),
+                            InputFormText(
+                              setInput: (value) {
+                                if (!touched[2]) {
+                                  touched[2] = true;
+                                }
+                                changePass.confirmPass = value;
+                              },
+                              obscure: obscure[2],
+                              validate: validate,
+                              label: 'Confirm Password',
+                              icon: const Icon(Icons.key_off_rounded),
+                              validator: (value) {
+                                if (!touched[2]) {
+                                  return null;
+                                }
+                                if (value!.isEmpty) {
+                                  return 'Please confirm your new password';
+                                }
+                                if (value != changePass.newPass) {
+                                  return 'Passwords do not match';
+                                }
+                                return null;
+                              },
+                              setObscure: (value) {
+                                setState(() {
+                                  obscure[2] = value;
+                                });
+                              },
+                            ),
+                            const SizedBox(height: 20),
+                            GestureDetector(
+                              onTap: () async {
+                                if (!validate()) {
+                                  return;
+                                }
+                                final bool success = await changePass.sendReq();
+                                showDialogs(success).then(
+                                    (value) => Navigator.of(context).pop());
+                              },
+                              child: Container(
+                                margin: const EdgeInsets.all(10),
+                                padding: const EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                    color: Colors.red,
+                                    borderRadius: BorderRadius.circular(10)),
+                                child: const Text(
+                                  'Send Request',
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                    ]),
+              ),
             ),
           );
   }
