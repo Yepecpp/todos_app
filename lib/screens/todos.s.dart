@@ -17,6 +17,10 @@ class TodosView extends StatefulWidget {
 class _TodosViewState extends State<TodosView> {
   @override
   Widget build(BuildContext context) {
+    addTodo(Todo todo) {
+      context.read<TodosBloc>().add(TodosEventModify(todo));
+    }
+
     return SafeArea(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -45,10 +49,8 @@ class _TodosViewState extends State<TodosView> {
                 Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (context) => AddTodoPopup(
+                      addTodo: addTodo,
                       todo: Todo(),
-                      addTodo: (todo) {
-                        context.read<TodosBloc>().add(TodosEventModify(todo));
-                      },
                     ),
                   ),
                 );

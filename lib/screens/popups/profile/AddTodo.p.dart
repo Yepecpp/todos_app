@@ -1,6 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:multi_select_flutter/multi_select_flutter.dart';
 import 'package:todos_app/components/login/Input.c.dart';
 import 'package:todos_app/models/todos.m.dart';
+
+const flags = [
+  'Important',
+  'Urgent',
+  'Private',
+  'Public',
+  'Completed',
+  'Incomplete',
+  'Renegated'
+];
 
 class AddTodoPopup extends StatefulWidget {
   final Todo todo;
@@ -76,6 +88,59 @@ class _AddTodoPopupState extends State<AddTodoPopup> {
                           }
                           return null;
                         }),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                      ),
+                      child: Container(
+                        padding: const EdgeInsets.only(left: 10.0, right: 10.0),
+                        child: MultiSelectDialogField(
+                          initialValue:
+                              widget.todo.flags ?? List<String>.empty(),
+                          itemsTextStyle: GoogleFonts.rubik(
+                            color: Colors.black,
+                            fontSize: 16,
+                          ),
+                          selectedItemsTextStyle: GoogleFonts.rubik(
+                            color: Colors.white,
+                            fontSize: 16,
+                          ),
+                          searchable: true,
+                          searchIcon: const Icon(Icons.search),
+                          listType: MultiSelectListType.CHIP,
+                          items: flags
+                              .map((e) =>
+                                  MultiSelectItem<String>(e.toLowerCase(), e))
+                              .toList(),
+                          title: const Text("Flags"),
+                          selectedColor: Colors.black,
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              color: Colors.red.shade900,
+                              width: 1,
+                            ),
+                            borderRadius: BorderRadius.circular(25),
+                          ),
+                          buttonIcon: const Icon(
+                            Icons.flag,
+                            color: Colors.red,
+                          ),
+                          buttonText: Text(
+                            "Select Flags",
+                            style: GoogleFonts.rubik(
+                              color: Colors.black,
+                              fontSize: 16,
+                            ),
+                          ),
+                          onConfirm: (results) {
+                            widget.todo.flags = results;
+                          },
+                        ),
+                      ),
+                    ),
                     Container(
                       padding: const EdgeInsets.all(10),
                       alignment: AlignmentGeometry.lerp(

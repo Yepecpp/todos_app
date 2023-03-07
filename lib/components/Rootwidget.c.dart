@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:todos_app/components/global/buttonNavbar.c.dart';
-import 'package:todos_app/screens/index.s.dart';
+//import 'package:todos_app/screens/index.s.dart';
 import 'package:todos_app/screens/todos.s.dart';
 import 'package:todos_app/screens/profile.s.dart';
 
@@ -14,9 +14,9 @@ class RootWidget extends StatefulWidget {
 class _RootWidgetState extends State<RootWidget> {
   int currentPage = 0;
   static const List<Widget> views = [
-    IndexView(),
-    ProfileView(),
+    //IndexView(),
     TodosView(),
+    ProfileView(),
   ];
   @override
   Widget build(BuildContext context) {

@@ -14,23 +14,23 @@ class ButtonNav extends StatelessWidget {
       elevation: 0,
       selectedIndex: currentPage,
       destinations: const [
+        // NavigationDestination(
+        //   selectedIcon: Icon(Icons.home, color: selectedColor),
+        //   icon: Icon(Icons.home),
+        //   label: 'Home',
+        //   tooltip: 'Home',
+        // ),
         NavigationDestination(
-          selectedIcon: Icon(Icons.home, color: selectedColor),
-          icon: Icon(Icons.home),
-          label: 'Home',
-          tooltip: 'Home',
+          icon: Icon(Icons.bookmark_add),
+          selectedIcon: Icon(Icons.bookmark_add, color: selectedColor),
+          label: 'Todos',
+          tooltip: 'Todos',
         ),
         NavigationDestination(
           icon: Icon(Icons.person),
           selectedIcon: Icon(Icons.person, color: selectedColor),
           label: 'Profile',
           tooltip: 'Profile',
-        ),
-        NavigationDestination(
-          icon: Icon(Icons.bookmark_add),
-          selectedIcon: Icon(Icons.bookmark_add, color: selectedColor),
-          label: 'Todos',
-          tooltip: 'Todos',
         ),
       ],
       onDestinationSelected: (int index) {

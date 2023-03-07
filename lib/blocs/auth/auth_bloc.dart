@@ -15,20 +15,31 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       final login = ILogin(username: '', password: '');
       emit(AuthLoading(login: login));
       final auth = await login.getAuth();
-      if (auth.status == 200) {
-        emit(AuthLoggedIn(auth));
-      } else {
-        emit(AuthInitial(auth: auth));
+      try {
+        if (auth.status == 200) {
+          emit(AuthLoggedIn(auth));
+        } else {
+          emit(AuthInitial(auth: auth));
+        }
+      } catch (e) {
+        emit(AuthInitial(
+            auth: Auth(status: 500, msg: "Can't connect to the server")));
       }
     });
     on<AuthEventLogIn>((event, emit) async {
       emit(AuthLoading(login: event.login));
 
-      final auth = await event.login.login();
-      if (auth.status == 200) {
-        emit(AuthLoggedIn(auth));
-      } else {
-        emit(AuthInitial(auth: auth, login: event.login));
+      try {
+        final auth = await event.login.login();
+        if (auth.status == 200) {
+          emit(AuthLoggedIn(auth));
+        } else {
+          emit(AuthInitial(auth: auth, login: event.login));
+        }
+      } catch (e) {
+        emit(AuthInitial(
+            auth: Auth(status: 500, msg: "Can't connect to the server"),
+            login: event.login));
       }
     });
     on<AuthEventLogOut>((event, emit) async {

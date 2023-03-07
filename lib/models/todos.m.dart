@@ -67,7 +67,7 @@ class Todo {
     title = json['title'];
     description = json['description'];
     status = json['status'] != null ? Status.fromJson(json['status']) : null;
-    flags = json['flags'].cast<String>();
+    flags = json['flags']!.cast<String>();
   }
   Future<Map<String, dynamic>> modifyTodo() async {
     final data = toJson();
@@ -90,14 +90,33 @@ class Todo {
             },
             body: jsonEncode({'todo': data}),
           ));
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return {
-        'todo': Todo.fromJson(jsonDecode(response.body)),
+        'todo': Todo.fromJson(jsonDecode(response.body)['todo']),
         'status': response.statusCode
       };
     }
     debugPrint('failed to modify todo: ${response.body}');
     return {'todo': this, 'status': response.statusCode};
+  }
+
+  Future<bool> deleteTodo() async {
+    final data = toJson();
+    await storage.ready;
+    final token = storage.getItem('token');
+    final response = await http.delete(
+      Uri.parse(url),
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+        "authorization": "Bearer $token"
+      },
+      body: jsonEncode({'todo': data}),
+    );
+    if (response.statusCode != 200) {
+      debugPrint('failed to delete todo: ${response.body}');
+      return false;
+    }
+    return true;
   }
 
   Map<String, dynamic> toJson() {
@@ -116,18 +135,20 @@ class Todo {
 class Status {
   bool isCompleted = false;
   DateTime? createdAt;
-
-  Status({this.isCompleted = false, this.createdAt});
+  DateTime? completedAt;
+  Status({this.isCompleted = false, this.createdAt, this.completedAt});
 
   Status.fromJson(Map<String, dynamic> json) {
     isCompleted = json['isCompleted'];
     createdAt = DateTime.tryParse(json['createdAt']) ?? DateTime.now();
+    completedAt = DateTime.tryParse(json['completedAt'] ?? '');
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['isCompleted'] = isCompleted;
     data['createdAt'] = createdAt!.toIso8601String();
+    data['completedAt'] = completedAt?.toIso8601String();
     return data;
   }
 }
